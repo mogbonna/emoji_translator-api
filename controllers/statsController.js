@@ -1,27 +1,42 @@
 const EmojiMapping = require("../models/EmojiMapping");
 const Translation = require("../models/Translation");
 
-exports.getStats = async (req, res) => {
-  try {
-    const totalTranslation = await Translation.countDocuments();
-    const emojiUsage = await EmojiMapping.find(
-      {},
-      { word: 1, emoji: 1, _id: 0 }
-    );
-    res.json({ totalTranslation, emojiUsage });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+// Get translation history
 exports.getHistory = async (req, res) => {
   try {
-    const history = await Translation.find()
-      .sort({ timestamp: -1 })
-      .limit(10)
-      .select(-__v);
+    const history = await Translation.find({}, "-__v")
+      .sort({ createdAt: -1 })
+      .limit(10);
 
-    res.json({ history });
+    res.json({
+      success: true,
+      data: history,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch history",
+    });
+  }
+};
+
+// Get usage statistics
+exports.getStats = async (req, res) => {
+  try {
+    const totalTranslations = await Translation.countDocuments();
+    const mappingStats = await EmojiMapping.find({}, "word emoji usageCount");
+
+    res.json({
+      success: true,
+      data: {
+        totalTranslations,
+        mappingStats,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch statistics",
+    });
   }
 };

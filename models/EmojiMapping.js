@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const emojiMappingSchema = new mongoose.Schema({
-  original: {
+  word: {
     type: String,
     required: true,
     trim: true,
@@ -15,10 +15,6 @@ const emojiMappingSchema = new mongoose.Schema({
   usageCount: {
     type: Number,
     default: 0,
-  },
-  timestamp: {
-    type: Date,
-    default: Date.now,
   },
 });
 
